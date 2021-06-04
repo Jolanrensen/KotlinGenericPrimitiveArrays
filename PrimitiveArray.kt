@@ -1,7 +1,5 @@
 @file:Suppress("NOTHING_TO_INLINE", "OVERRIDE_BY_INLINE", "unused")
 
-package nl.jolanrensen.thesis
-
 import kotlin.random.Random
 
 sealed interface PrimitiveArray<T : Comparable<T>> : Collection<T> {
