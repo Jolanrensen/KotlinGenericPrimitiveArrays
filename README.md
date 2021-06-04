@@ -18,3 +18,13 @@ The interface `PrimitiveArray<T>` is sealed, so only the classes in the file can
 I also copied over all 1.5.10 standard library functions regarding arrays to work with `PrimitiveArray`s as well and modified them to work correctly (hopefully). I didn't manage to copy over the docs yet, but this is a proof of concept anyways.
 
 As a bonus, `PrimitiveArray` implements `Collection` as well, so it's automatically an `Iterable` and has more standard library goodies.
+
+# Usage
+
+```kotlin
+fun <T : Comparable<T>> reverseArray(array: PrimitiveArray<T>) {...}
+
+val myArray: PrimitiveDoubleArray = doubleArrayOf(1, 2, 3, 4).asPrimitiveArray()
+
+reverseArray(myArray)
+```
