@@ -2,17 +2,9 @@
 
 import kotlin.random.Random
 
-sealed interface PrimitiveArray<T : Comparable<T>> : Collection<T> {
+sealed interface PrimitiveArray<T : Comparable<T>> : List<T> {
 
     val actualData: Any
-
-    /**
-     * Returns the array element at the given [index].  This method can be called using the index operator.
-     *
-     * If the [index] is out of bounds of this array, throws an [IndexOutOfBoundsException] except in Kotlin/JS
-     * where the behavior is unspecified.
-     */
-    operator fun get(index: Int): T
 
     /**
      * Sets the element at the given [index] to the given [value]. This method can be called using the index operator.
@@ -69,6 +61,19 @@ value class PrimitiveByteArray(override val actualData: ByteArray) : PrimitiveAr
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Byte): Boolean = actualData.contains(element)
     override inline fun containsAll(elements: Collection<Byte>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Byte): Int = actualData.indexOf(element)
+    override inline fun lastIndexOf(element: Byte): Int = actualData.lastIndexOf(element)
+    override inline fun listIterator(): ListIterator<Byte> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Byte> = object : ListIterator<Byte> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Byte = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Byte = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Byte> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun ByteArray.asPrimitiveArray() = PrimitiveByteArray(this)
@@ -97,6 +102,19 @@ value class PrimitiveCharArray(override val actualData: CharArray) : PrimitiveAr
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Char): Boolean = actualData.contains(element)
     override inline fun containsAll(elements: Collection<Char>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Char): Int = actualData.indexOf(element)
+    override inline fun lastIndexOf(element: Char): Int = actualData.lastIndexOf(element)
+    override inline fun listIterator(): ListIterator<Char> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Char> = object : ListIterator<Char> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Char = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Char = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Char> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun CharArray.asPrimitiveArray() = PrimitiveCharArray(this)
@@ -125,6 +143,19 @@ value class PrimitiveShortArray(override val actualData: ShortArray) : Primitive
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Short): Boolean = actualData.contains(element)
     override inline fun containsAll(elements: Collection<Short>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Short): Int = actualData.indexOf(element)
+    override inline fun lastIndexOf(element: Short): Int = actualData.lastIndexOf(element)
+    override inline fun listIterator(): ListIterator<Short> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Short> = object : ListIterator<Short> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Short = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Short = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Short> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun ShortArray.asPrimitiveArray() = PrimitiveShortArray(this)
@@ -153,6 +184,19 @@ value class PrimitiveIntArray(override val actualData: IntArray) : PrimitiveArra
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Int): Boolean = actualData.contains(element)
     override inline fun containsAll(elements: Collection<Int>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Int): Int = actualData.indexOf(element)
+    override inline fun lastIndexOf(element: Int): Int = actualData.lastIndexOf(element)
+    override inline fun listIterator(): ListIterator<Int> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Int> = object : ListIterator<Int> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Int = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Int = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Int> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun IntArray.asPrimitiveArray() = PrimitiveIntArray(this)
@@ -181,6 +225,19 @@ value class PrimitiveLongArray(override val actualData: LongArray) : PrimitiveAr
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Long): Boolean = actualData.contains(element)
     override inline fun containsAll(elements: Collection<Long>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Long): Int = actualData.indexOf(element)
+    override inline fun lastIndexOf(element: Long): Int = actualData.lastIndexOf(element)
+    override inline fun listIterator(): ListIterator<Long> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Long> = object : ListIterator<Long> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Long = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Long = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Long> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun LongArray.asPrimitiveArray() = PrimitiveLongArray(this)
@@ -209,6 +266,19 @@ value class PrimitiveFloatArray(override val actualData: FloatArray) : Primitive
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Float): Boolean = actualData.any { it == element }
     override inline fun containsAll(elements: Collection<Float>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Float): Int = actualData.indexOfFirst { it == element }
+    override inline fun lastIndexOf(element: Float): Int = actualData.indexOfLast { it == element }
+    override inline fun listIterator(): ListIterator<Float> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Float> = object : ListIterator<Float> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Float = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Float = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Float> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun FloatArray.asPrimitiveArray() = PrimitiveFloatArray(this)
@@ -237,6 +307,19 @@ value class PrimitiveDoubleArray(override val actualData: DoubleArray) : Primiti
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Double): Boolean = actualData.any { it == element }
     override inline fun containsAll(elements: Collection<Double>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Double): Int = actualData.indexOfFirst { it == element }
+    override inline fun lastIndexOf(element: Double): Int = actualData.indexOfLast { it == element }
+    override inline fun listIterator(): ListIterator<Double> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Double> = object : ListIterator<Double> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Double = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Double = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Double> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun DoubleArray.asPrimitiveArray() = PrimitiveDoubleArray(this)
@@ -265,6 +348,19 @@ value class PrimitiveBooleanArray(override val actualData: BooleanArray) : Primi
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
     override inline fun contains(element: Boolean): Boolean = actualData.contains(element)
     override inline fun containsAll(elements: Collection<Boolean>): Boolean = elements.all { contains(it) }
+    override inline fun indexOf(element: Boolean): Int = actualData.indexOf(element)
+    override inline fun lastIndexOf(element: Boolean): Int = actualData.lastIndexOf(element)
+    override inline fun listIterator(): ListIterator<Boolean> = listIterator(0)
+    override inline fun listIterator(index: Int): ListIterator<Boolean> = object : ListIterator<Boolean> {
+        var i = index
+        override fun hasNext(): Boolean = i >= actualData.size
+        override fun hasPrevious(): Boolean = i > 0
+        override fun next(): Boolean = actualData[i++]
+        override fun nextIndex(): Int = i
+        override fun previous(): Boolean = actualData[--i]
+        override fun previousIndex(): Int = i - 1
+    }
+    override inline fun subList(fromIndex: Int, toIndex: Int): List<Boolean> = actualData.slice(fromIndex until toIndex)
 }
 
 inline fun BooleanArray.asPrimitiveArray() = PrimitiveBooleanArray(this)
