@@ -27,7 +27,7 @@ sealed interface PrimitiveArray<T : Comparable<T>> : List<T> {
     operator fun plus(elements: Collection<T>): PrimitiveArray<T>
 
     operator fun plus(elements: PrimitiveArray<out T>): PrimitiveArray<T>
-    
+
     fun asList(): List<T>
 
     fun sort()
@@ -35,7 +35,7 @@ sealed interface PrimitiveArray<T : Comparable<T>> : List<T> {
     fun sort(fromIndex: Int = 0, toIndex: Int = size)
 
     fun newArray(size: Int): PrimitiveArray<T>
-    
+
     fun toTypedArray(): Array<T>
 
 }
@@ -57,17 +57,26 @@ inline fun <reified T : Comparable<T>> primitiveArrayOf(vararg values: T): Primi
 
 @JvmInline
 value class PrimitiveByteArray(override val actualData: ByteArray) : PrimitiveArray<Byte> {
+    constructor(size: Int) : this(ByteArray(size))
+    constructor(size: Int, init: (index: Int) -> Byte) : this(ByteArray(size, init))
+
     override inline fun get(index: Int): Byte = actualData[index]
     override inline fun set(index: Int, value: Byte): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Byte> = actualData.iterator()
     override inline fun copyOf(): PrimitiveByteArray = PrimitiveByteArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveByteArray = PrimitiveByteArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveByteArray = PrimitiveByteArray(actualData.copyOfRange(fromIndex, toIndex))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveByteArray =
+        PrimitiveByteArray(actualData.copyOfRange(fromIndex, toIndex))
+
     override fun fill(element: Byte, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
     override inline operator fun plus(element: Byte): PrimitiveByteArray = PrimitiveByteArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Byte>): PrimitiveByteArray = PrimitiveByteArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Byte>): PrimitiveByteArray = PrimitiveByteArray(actualData.plus(elements.data))
+    override inline operator fun plus(elements: Collection<Byte>): PrimitiveByteArray =
+        PrimitiveByteArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Byte>): PrimitiveByteArray =
+        PrimitiveByteArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Byte> = actualData.asList()
     override inline fun sort(): Unit = actualData.sort()
     override fun sort(fromIndex: Int, toIndex: Int): Unit = actualData.sort(fromIndex, toIndex)
@@ -88,6 +97,7 @@ value class PrimitiveByteArray(override val actualData: ByteArray) : PrimitiveAr
         override fun previous(): Byte = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Byte> = actualData.slice(fromIndex until toIndex)
 }
 
@@ -100,17 +110,26 @@ val PrimitiveArray<out Byte>.data: ByteArray
 
 @JvmInline
 value class PrimitiveCharArray(override val actualData: CharArray) : PrimitiveArray<Char> {
+    constructor(size: Int) : this(CharArray(size))
+    constructor(size: Int, init: (index: Int) -> Char) : this(CharArray(size, init))
+
     override inline fun get(index: Int): Char = actualData[index]
     override inline fun set(index: Int, value: Char): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Char> = actualData.iterator()
     override inline fun copyOf(): PrimitiveCharArray = PrimitiveCharArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveCharArray = PrimitiveCharArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveCharArray = PrimitiveCharArray(actualData.copyOfRange(fromIndex, toIndex))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveCharArray =
+        PrimitiveCharArray(actualData.copyOfRange(fromIndex, toIndex))
+
     override fun fill(element: Char, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
     override inline operator fun plus(element: Char): PrimitiveCharArray = PrimitiveCharArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Char>): PrimitiveCharArray = PrimitiveCharArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Char>): PrimitiveCharArray = PrimitiveCharArray(actualData.plus(elements.data))
+    override inline operator fun plus(elements: Collection<Char>): PrimitiveCharArray =
+        PrimitiveCharArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Char>): PrimitiveCharArray =
+        PrimitiveCharArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Char> = actualData.asList()
     override inline fun sort(): Unit = actualData.sort()
     override fun sort(fromIndex: Int, toIndex: Int): Unit = actualData.sort(fromIndex, toIndex)
@@ -131,6 +150,7 @@ value class PrimitiveCharArray(override val actualData: CharArray) : PrimitiveAr
         override fun previous(): Char = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Char> = actualData.slice(fromIndex until toIndex)
 }
 
@@ -143,17 +163,28 @@ val PrimitiveArray<out Char>.data: CharArray
 
 @JvmInline
 value class PrimitiveShortArray(override val actualData: ShortArray) : PrimitiveArray<Short> {
+    constructor(size: Int) : this(ShortArray(size))
+    constructor(size: Int, init: (index: Int) -> Short) : this(ShortArray(size, init))
+
     override inline fun get(index: Int): Short = actualData[index]
     override inline fun set(index: Int, value: Short): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Short> = actualData.iterator()
     override inline fun copyOf(): PrimitiveShortArray = PrimitiveShortArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveShortArray = PrimitiveShortArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveShortArray = PrimitiveShortArray(actualData.copyOfRange(fromIndex, toIndex))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveShortArray =
+        PrimitiveShortArray(actualData.copyOfRange(fromIndex, toIndex))
+
     override fun fill(element: Short, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
-    override inline operator fun plus(element: Short): PrimitiveShortArray = PrimitiveShortArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Short>): PrimitiveShortArray = PrimitiveShortArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Short>): PrimitiveShortArray = PrimitiveShortArray(actualData.plus(elements.data))
+    override inline operator fun plus(element: Short): PrimitiveShortArray =
+        PrimitiveShortArray(actualData.plus(element))
+
+    override inline operator fun plus(elements: Collection<Short>): PrimitiveShortArray =
+        PrimitiveShortArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Short>): PrimitiveShortArray =
+        PrimitiveShortArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Short> = actualData.asList()
     override inline fun sort(): Unit = actualData.sort()
     override fun sort(fromIndex: Int, toIndex: Int): Unit = actualData.sort(fromIndex, toIndex)
@@ -174,6 +205,7 @@ value class PrimitiveShortArray(override val actualData: ShortArray) : Primitive
         override fun previous(): Short = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Short> = actualData.slice(fromIndex until toIndex)
 }
 
@@ -186,17 +218,26 @@ val PrimitiveArray<out Short>.data: ShortArray
 
 @JvmInline
 value class PrimitiveIntArray(override val actualData: IntArray) : PrimitiveArray<Int> {
+    constructor(size: Int) : this(IntArray(size))
+    constructor(size: Int, init: (index: Int) -> Int) : this(IntArray(size, init))
+
     override inline fun get(index: Int): Int = actualData[index]
     override inline fun set(index: Int, value: Int): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Int> = actualData.iterator()
     override inline fun copyOf(): PrimitiveIntArray = PrimitiveIntArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveIntArray = PrimitiveIntArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveIntArray = PrimitiveIntArray(actualData.copyOfRange(fromIndex, toIndex))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveIntArray =
+        PrimitiveIntArray(actualData.copyOfRange(fromIndex, toIndex))
+
     override fun fill(element: Int, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
     override inline operator fun plus(element: Int): PrimitiveIntArray = PrimitiveIntArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Int>): PrimitiveIntArray = PrimitiveIntArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Int>): PrimitiveIntArray = PrimitiveIntArray(actualData.plus(elements.data))
+    override inline operator fun plus(elements: Collection<Int>): PrimitiveIntArray =
+        PrimitiveIntArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Int>): PrimitiveIntArray =
+        PrimitiveIntArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Int> = actualData.asList()
     override inline fun sort(): Unit = actualData.sort()
     override fun sort(fromIndex: Int, toIndex: Int): Unit = actualData.sort(fromIndex, toIndex)
@@ -217,6 +258,7 @@ value class PrimitiveIntArray(override val actualData: IntArray) : PrimitiveArra
         override fun previous(): Int = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Int> = actualData.slice(fromIndex until toIndex)
 }
 
@@ -229,17 +271,26 @@ val PrimitiveArray<out Int>.data: IntArray
 
 @JvmInline
 value class PrimitiveLongArray(override val actualData: LongArray) : PrimitiveArray<Long> {
+    constructor(size: Int) : this(LongArray(size))
+    constructor(size: Int, init: (index: Int) -> Long) : this(LongArray(size, init))
+
     override inline fun get(index: Int): Long = actualData[index]
     override inline fun set(index: Int, value: Long): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Long> = actualData.iterator()
     override inline fun copyOf(): PrimitiveLongArray = PrimitiveLongArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveLongArray = PrimitiveLongArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveLongArray = PrimitiveLongArray(actualData.copyOfRange(fromIndex, toIndex))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveLongArray =
+        PrimitiveLongArray(actualData.copyOfRange(fromIndex, toIndex))
+
     override fun fill(element: Long, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
     override inline operator fun plus(element: Long): PrimitiveLongArray = PrimitiveLongArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Long>): PrimitiveLongArray = PrimitiveLongArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Long>): PrimitiveLongArray = PrimitiveLongArray(actualData.plus(elements.data))
+    override inline operator fun plus(elements: Collection<Long>): PrimitiveLongArray =
+        PrimitiveLongArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Long>): PrimitiveLongArray =
+        PrimitiveLongArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Long> = actualData.asList()
     override inline fun sort(): Unit = actualData.sort()
     override fun sort(fromIndex: Int, toIndex: Int): Unit = actualData.sort(fromIndex, toIndex)
@@ -260,6 +311,7 @@ value class PrimitiveLongArray(override val actualData: LongArray) : PrimitiveAr
         override fun previous(): Long = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Long> = actualData.slice(fromIndex until toIndex)
 }
 
@@ -272,17 +324,28 @@ val PrimitiveArray<out Long>.data: LongArray
 
 @JvmInline
 value class PrimitiveFloatArray(override val actualData: FloatArray) : PrimitiveArray<Float> {
+    constructor(size: Int) : this(FloatArray(size))
+    constructor(size: Int, init: (index: Int) -> Float) : this(FloatArray(size, init))
+
     override inline fun get(index: Int): Float = actualData[index]
     override inline fun set(index: Int, value: Float): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Float> = actualData.iterator()
     override inline fun copyOf(): PrimitiveFloatArray = PrimitiveFloatArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveFloatArray = PrimitiveFloatArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveFloatArray = PrimitiveFloatArray(actualData.copyOfRange(fromIndex, toIndex))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveFloatArray =
+        PrimitiveFloatArray(actualData.copyOfRange(fromIndex, toIndex))
+
     override fun fill(element: Float, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
-    override inline operator fun plus(element: Float): PrimitiveFloatArray = PrimitiveFloatArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Float>): PrimitiveFloatArray = PrimitiveFloatArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Float>): PrimitiveFloatArray = PrimitiveFloatArray(actualData.plus(elements.data))
+    override inline operator fun plus(element: Float): PrimitiveFloatArray =
+        PrimitiveFloatArray(actualData.plus(element))
+
+    override inline operator fun plus(elements: Collection<Float>): PrimitiveFloatArray =
+        PrimitiveFloatArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Float>): PrimitiveFloatArray =
+        PrimitiveFloatArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Float> = actualData.asList()
     override inline fun sort(): Unit = actualData.sort()
     override fun sort(fromIndex: Int, toIndex: Int): Unit = actualData.sort(fromIndex, toIndex)
@@ -303,6 +366,7 @@ value class PrimitiveFloatArray(override val actualData: FloatArray) : Primitive
         override fun previous(): Float = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Float> = actualData.slice(fromIndex until toIndex)
 }
 
@@ -315,17 +379,30 @@ val PrimitiveArray<out Float>.data: FloatArray
 
 @JvmInline
 value class PrimitiveDoubleArray(override val actualData: DoubleArray) : PrimitiveArray<Double> {
+    constructor(size: Int) : this(DoubleArray(size))
+    constructor(size: Int, init: (index: Int) -> Double) : this(DoubleArray(size, init))
+
     override inline fun get(index: Int): Double = actualData[index]
     override inline fun set(index: Int, value: Double): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Double> = actualData.iterator()
     override inline fun copyOf(): PrimitiveDoubleArray = PrimitiveDoubleArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveDoubleArray = PrimitiveDoubleArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveDoubleArray = PrimitiveDoubleArray(actualData.copyOfRange(fromIndex, toIndex))
-    override fun fill(element: Double, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
-    override inline operator fun plus(element: Double): PrimitiveDoubleArray = PrimitiveDoubleArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Double>): PrimitiveDoubleArray = PrimitiveDoubleArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Double>): PrimitiveDoubleArray = PrimitiveDoubleArray(actualData.plus(elements.data))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveDoubleArray =
+        PrimitiveDoubleArray(actualData.copyOfRange(fromIndex, toIndex))
+
+    override fun fill(element: Double, fromIndex: Int, toIndex: Int): Unit =
+        actualData.fill(element, fromIndex, toIndex)
+
+    override inline operator fun plus(element: Double): PrimitiveDoubleArray =
+        PrimitiveDoubleArray(actualData.plus(element))
+
+    override inline operator fun plus(elements: Collection<Double>): PrimitiveDoubleArray =
+        PrimitiveDoubleArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Double>): PrimitiveDoubleArray =
+        PrimitiveDoubleArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Double> = actualData.asList()
     override inline fun sort(): Unit = actualData.sort()
     override fun sort(fromIndex: Int, toIndex: Int): Unit = actualData.sort(fromIndex, toIndex)
@@ -346,10 +423,12 @@ value class PrimitiveDoubleArray(override val actualData: DoubleArray) : Primiti
         override fun previous(): Double = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Double> = actualData.slice(fromIndex until toIndex)
 }
 
-inline fun primitiveDoubleArrayOf(vararg values: Double): PrimitiveDoubleArray = doubleArrayOf(*values).asPrimitiveArray()
+inline fun primitiveDoubleArrayOf(vararg values: Double): PrimitiveDoubleArray =
+    doubleArrayOf(*values).asPrimitiveArray()
 
 inline fun DoubleArray.asPrimitiveArray() = PrimitiveDoubleArray(this)
 
@@ -358,20 +437,35 @@ val PrimitiveArray<out Double>.data: DoubleArray
 
 @JvmInline
 value class PrimitiveBooleanArray(override val actualData: BooleanArray) : PrimitiveArray<Boolean> {
+    constructor(size: Int) : this(BooleanArray(size))
+    constructor(size: Int, init: (index: Int) -> Boolean) : this(BooleanArray(size, init))
+
     override inline fun get(index: Int): Boolean = actualData[index]
     override inline fun set(index: Int, value: Boolean): Unit = actualData.set(index, value)
     override inline val size: Int get() = actualData.size
     override inline fun iterator(): Iterator<Boolean> = actualData.iterator()
     override inline fun copyOf(): PrimitiveBooleanArray = PrimitiveBooleanArray(actualData.copyOf())
     override inline fun copyOf(newSize: Int): PrimitiveBooleanArray = PrimitiveBooleanArray(actualData.copyOf(newSize))
-    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveBooleanArray = PrimitiveBooleanArray(actualData.copyOfRange(fromIndex, toIndex))
-    override fun fill(element: Boolean, fromIndex: Int, toIndex: Int): Unit = actualData.fill(element, fromIndex, toIndex)
-    override inline operator fun plus(element: Boolean): PrimitiveBooleanArray = PrimitiveBooleanArray(actualData.plus(element))
-    override inline operator fun plus(elements: Collection<Boolean>): PrimitiveBooleanArray = PrimitiveBooleanArray(actualData.plus(elements))
-    override inline operator fun plus(elements: PrimitiveArray<out Boolean>): PrimitiveBooleanArray = PrimitiveBooleanArray(actualData.plus(elements.data))
+    override inline fun copyOfRange(fromIndex: Int, toIndex: Int): PrimitiveBooleanArray =
+        PrimitiveBooleanArray(actualData.copyOfRange(fromIndex, toIndex))
+
+    override fun fill(element: Boolean, fromIndex: Int, toIndex: Int): Unit =
+        actualData.fill(element, fromIndex, toIndex)
+
+    override inline operator fun plus(element: Boolean): PrimitiveBooleanArray =
+        PrimitiveBooleanArray(actualData.plus(element))
+
+    override inline operator fun plus(elements: Collection<Boolean>): PrimitiveBooleanArray =
+        PrimitiveBooleanArray(actualData.plus(elements))
+
+    override inline operator fun plus(elements: PrimitiveArray<out Boolean>): PrimitiveBooleanArray =
+        PrimitiveBooleanArray(actualData.plus(elements.data))
+
     override inline fun asList(): List<Boolean> = actualData.asList()
     override inline fun sort(): Unit = throw UnsupportedOperationException("Boolean Arrays do not support sorting.")
-    override fun sort(fromIndex: Int, toIndex: Int): Unit = throw UnsupportedOperationException("Boolean Arrays do not support sorting.")
+    override fun sort(fromIndex: Int, toIndex: Int): Unit =
+        throw UnsupportedOperationException("Boolean Arrays do not support sorting.")
+
     override inline fun newArray(size: Int): PrimitiveBooleanArray = PrimitiveBooleanArray(BooleanArray(size))
     override inline fun toTypedArray(): Array<Boolean> = actualData.toTypedArray()
     override inline fun isEmpty(): Boolean = actualData.isEmpty()
@@ -389,10 +483,12 @@ value class PrimitiveBooleanArray(override val actualData: BooleanArray) : Primi
         override fun previous(): Boolean = actualData[--i]
         override fun previousIndex(): Int = i - 1
     }
+
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Boolean> = actualData.slice(fromIndex until toIndex)
 }
 
-inline fun primitiveBooleanArrayOf(vararg values: Boolean): PrimitiveBooleanArray = booleanArrayOf(*values).asPrimitiveArray()
+inline fun primitiveBooleanArrayOf(vararg values: Boolean): PrimitiveBooleanArray =
+    booleanArrayOf(*values).asPrimitiveArray()
 
 inline fun BooleanArray.asPrimitiveArray() = PrimitiveBooleanArray(this)
 
