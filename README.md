@@ -24,7 +24,9 @@ As a bonus, `PrimitiveArray` implements `Collection` as well, so it's automatica
 ```kotlin
 fun <T : Comparable<T>> reverseArray(array: PrimitiveArray<T>) {...}
 
-val myArray: PrimitiveDoubleArray = doubleArrayOf(1, 2, 3, 4).asPrimitiveArray()
+val myArray: PrimitiveDoubleArray = doubleArrayOf(1.0, 2.0, 3.3, 4.0).asPrimitiveArray()
+val myOtherArray: PrimitiveIntArray = primitiveIntArrayOf(1, 2, 3)
 
 reverseArray(myArray)
+reverseArray(myOtherArray)
 ```
