@@ -76,6 +76,8 @@ value class PrimitiveByteArray(override val actualData: ByteArray) : PrimitiveAr
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Byte> = actualData.slice(fromIndex until toIndex)
 }
 
+inline fun primitiveByteArrayOf(vararg data: Byte): PrimitiveByteArray = byteArrayOf(*data).asPrimitiveArray()
+
 inline fun ByteArray.asPrimitiveArray() = PrimitiveByteArray(this)
 
 val PrimitiveArray<out Byte>.data: ByteArray
@@ -116,6 +118,8 @@ value class PrimitiveCharArray(override val actualData: CharArray) : PrimitiveAr
     }
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Char> = actualData.slice(fromIndex until toIndex)
 }
+
+inline fun primitiveCharArrayOf(vararg data: Char): PrimitiveCharArray = charArrayOf(*data).asPrimitiveArray()
 
 inline fun CharArray.asPrimitiveArray() = PrimitiveCharArray(this)
 
@@ -158,6 +162,8 @@ value class PrimitiveShortArray(override val actualData: ShortArray) : Primitive
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Short> = actualData.slice(fromIndex until toIndex)
 }
 
+inline fun primitiveShortArrayOf(vararg data: Short): PrimitiveShortArray = shortArrayOf(*data).asPrimitiveArray()
+
 inline fun ShortArray.asPrimitiveArray() = PrimitiveShortArray(this)
 
 val PrimitiveArray<out Short>.data: ShortArray
@@ -198,6 +204,8 @@ value class PrimitiveIntArray(override val actualData: IntArray) : PrimitiveArra
     }
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Int> = actualData.slice(fromIndex until toIndex)
 }
+
+inline fun primitiveIntArrayOf(vararg data: Int): PrimitiveIntArray = intArrayOf(*data).asPrimitiveArray()
 
 inline fun IntArray.asPrimitiveArray() = PrimitiveIntArray(this)
 
@@ -240,6 +248,8 @@ value class PrimitiveLongArray(override val actualData: LongArray) : PrimitiveAr
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Long> = actualData.slice(fromIndex until toIndex)
 }
 
+inline fun primitiveLongArrayOf(vararg data: Long): PrimitiveLongArray = longArrayOf(*data).asPrimitiveArray()
+
 inline fun LongArray.asPrimitiveArray() = PrimitiveLongArray(this)
 
 val PrimitiveArray<out Long>.data: LongArray
@@ -280,6 +290,8 @@ value class PrimitiveFloatArray(override val actualData: FloatArray) : Primitive
     }
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Float> = actualData.slice(fromIndex until toIndex)
 }
+
+inline fun primitiveFloatArrayOf(vararg data: Float): PrimitiveFloatArray = floatArrayOf(*data).asPrimitiveArray()
 
 inline fun FloatArray.asPrimitiveArray() = PrimitiveFloatArray(this)
 
@@ -322,6 +334,8 @@ value class PrimitiveDoubleArray(override val actualData: DoubleArray) : Primiti
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Double> = actualData.slice(fromIndex until toIndex)
 }
 
+inline fun primitiveDoubleArrayOf(vararg data: Double): PrimitiveDoubleArray = doubleArrayOf(*data).asPrimitiveArray()
+
 inline fun DoubleArray.asPrimitiveArray() = PrimitiveDoubleArray(this)
 
 val PrimitiveArray<out Double>.data: DoubleArray
@@ -362,6 +376,8 @@ value class PrimitiveBooleanArray(override val actualData: BooleanArray) : Primi
     }
     override inline fun subList(fromIndex: Int, toIndex: Int): List<Boolean> = actualData.slice(fromIndex until toIndex)
 }
+
+inline fun primitiveBooleanArrayOf(vararg data: Boolean): PrimitiveBooleanArray = booleanArrayOf(*data).asPrimitiveArray()
 
 inline fun BooleanArray.asPrimitiveArray() = PrimitiveBooleanArray(this)
 
