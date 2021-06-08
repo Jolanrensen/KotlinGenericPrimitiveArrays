@@ -37,7 +37,37 @@ sealed interface PrimitiveArray<T : Comparable<T>> : List<T> {
     fun newArray(size: Int): PrimitiveArray<T>
 
     fun toTypedArray(): Array<T>
+    
+    @Suppress("UNCHECKED_CAST")
+    companion object {
+        @Deprecated("CAUTION! The only supported types are: Byte, Char, Short, Int, Long, Float, Double, and Boolean. They cannot be mixed.")
+        inline operator fun <reified T : Comparable<T>> invoke(size: Int): PrimitiveArray<T> =
+            when (T::class) {
+                Byte::class -> PrimitiveByteArray(size)
+                Char::class -> PrimitiveCharArray(size)
+                Short::class -> PrimitiveShortArray(size)
+                Int::class -> PrimitiveIntArray(size)
+                Long::class -> PrimitiveLongArray(size)
+                Float::class -> PrimitiveFloatArray(size)
+                Double::class -> PrimitiveDoubleArray(size)
+                Boolean::class -> PrimitiveBooleanArray(size)
+                else -> throw IllegalArgumentException("The type ${T::class} is not supported, only Byte, Char, Short, Int, Long, Float, Double, and Boolean are supported.")
+            } as PrimitiveArray<T>
 
+        @Deprecated("CAUTION! The only supported types are: Byte, Char, Short, Int, Long, Float, Double, and Boolean. They cannot be mixed.")
+        inline operator fun <reified T : Comparable<T>> invoke(size: Int, noinline init: (index: Int) -> T): PrimitiveArray<T> =
+            when (T::class) {
+                Byte::class -> PrimitiveByteArray(size, init as (Int) -> Byte)
+                Char::class -> PrimitiveCharArray(size, init as (Int) -> Char)
+                Short::class -> PrimitiveShortArray(size, init as (Int) -> Short)
+                Int::class -> PrimitiveIntArray(size, init as (Int) -> Int)
+                Long::class -> PrimitiveLongArray(size, init as (Int) -> Long)
+                Float::class -> PrimitiveFloatArray(size, init as (Int) -> Float)
+                Double::class -> PrimitiveDoubleArray(size, init as (Int) -> Double)
+                Boolean::class -> PrimitiveBooleanArray(size, init as (Int) -> Boolean)
+                else -> throw IllegalArgumentException("The type ${T::class} is not supported, only Byte, Char, Short, Int, Long, Float, Double, and Boolean are supported.")
+            } as PrimitiveArray<T>
+    }
 }
 
 @Suppress("UNCHECKED_CAST")
