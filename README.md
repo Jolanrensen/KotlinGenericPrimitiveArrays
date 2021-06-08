@@ -7,8 +7,6 @@ Documentation is still lacking, as well as an easy-to-import gradle project.
 
 Not sure if it works for multiplatform as well, but I imagine it does, although the benifits might be negligable.
 
-Note: Some boxing might still occur for some functions, like `filterTo`. I might make all functions be inline reified for this.
-
 # Goal
 Primitive arrays are a lot faster than Object/Any arrays. In Kotlin this is the difference between an `Array<Double>` and a `DoubleArray`. There is however no way currently for a function to request any primitive array. This can also be seen in the Kotlin standard library, where each primitive array has its own `.reverse()` function for example.
 
