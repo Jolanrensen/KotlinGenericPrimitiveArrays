@@ -37,7 +37,7 @@ sealed interface PrimitiveArray<T : Comparable<T>> : List<T> {
     fun newArray(size: Int): PrimitiveArray<T>
 
     fun toTypedArray(): Array<T>
-    
+
     @Suppress("UNCHECKED_CAST")
     companion object {
         @Deprecated("CAUTION! The only supported types are: Byte, Char, Short, Int, Long, Float, Double, and Boolean. They cannot be mixed.")
@@ -55,7 +55,10 @@ sealed interface PrimitiveArray<T : Comparable<T>> : List<T> {
             } as PrimitiveArray<T>
 
         @Deprecated("CAUTION! The only supported types are: Byte, Char, Short, Int, Long, Float, Double, and Boolean. They cannot be mixed.")
-        inline operator fun <reified T : Comparable<T>> invoke(size: Int, noinline init: (index: Int) -> T): PrimitiveArray<T> =
+        inline operator fun <reified T : Comparable<T>> invoke(
+            size: Int,
+            noinline init: (index: Int) -> T,
+        ): PrimitiveArray<T> =
             when (T::class) {
                 Byte::class -> PrimitiveByteArray(size, init as (Int) -> Byte)
                 Char::class -> PrimitiveCharArray(size, init as (Int) -> Char)
@@ -526,27 +529,27 @@ val PrimitiveArray<out Boolean>.data: BooleanArray
     get() = actualData as BooleanArray
 
 
-inline operator fun <T : Comparable<T>> PrimitiveArray<out T>.component1(): T {
+inline operator fun <reified T : Comparable<T>> PrimitiveArray<out T>.component1(): T {
     return get(0)
 }
 
 
-inline operator fun <T : Comparable<T>> PrimitiveArray<out T>.component2(): T {
+inline operator fun <reified T : Comparable<T>> PrimitiveArray<out T>.component2(): T {
     return get(1)
 }
 
 
-inline operator fun <T : Comparable<T>> PrimitiveArray<out T>.component3(): T {
+inline operator fun <reified T : Comparable<T>> PrimitiveArray<out T>.component3(): T {
     return get(2)
 }
 
 
-inline operator fun <T : Comparable<T>> PrimitiveArray<out T>.component4(): T {
+inline operator fun <reified T : Comparable<T>> PrimitiveArray<out T>.component4(): T {
     return get(3)
 }
 
 
-inline operator fun <T : Comparable<T>> PrimitiveArray<out T>.component5(): T {
+inline operator fun <reified T : Comparable<T>> PrimitiveArray<out T>.component5(): T {
     return get(4)
 }
 
@@ -554,46 +557,46 @@ inline operator fun <T : Comparable<T>> PrimitiveArray<out T>.component5(): T {
  * Returns `true` if [element] is found in the array.
  */
 @Suppress("UNCHECKED_CAST")
-operator fun <T : Comparable<T>> PrimitiveArray<out T>.contains(element: T): Boolean {
+inline operator fun <reified T : Comparable<T>> PrimitiveArray<out T>.contains(element: T): Boolean {
     return (this as PrimitiveArray<T>).indexOf(element) >= 0
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.elementAtOrElse(index: Int, defaultValue: (Int) -> T): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.elementAtOrElse(index: Int, defaultValue: (Int) -> T): T {
     return if (index >= 0 && index <= lastIndex) get(index) else defaultValue(index)
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.elementAtOrNull(index: Int): T? {
-    return this.getOrNull(index)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.elementAtOrNull(index: Int): T? {
+    return getOrNull<T>(index)
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.find(predicate: (T) -> Boolean): T? {
-    return firstOrNull(predicate)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.find(predicate: (T) -> Boolean): T? {
+    return firstOrNull<T>(predicate)
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.findLast(predicate: (T) -> Boolean): T? {
-    return lastOrNull(predicate)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.findLast(predicate: (T) -> Boolean): T? {
+    return lastOrNull<T>(predicate)
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.first(): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.first(): T {
     if (isEmpty())
         throw NoSuchElementException("Array is empty.")
     return this[0]
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.first(predicate: (T) -> Boolean): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.first(predicate: (T) -> Boolean): T {
     for (element in this) if (predicate(element)) return element
     throw NoSuchElementException("Array contains no element matching the predicate.")
 }
 
-inline fun <T : Comparable<T>, R : Any> PrimitiveArray<out T>.firstNotNullOf(transform: (T) -> R?): R {
-    return firstNotNullOfOrNull(transform)
+inline fun <reified T : Comparable<T>, R : Any> PrimitiveArray<out T>.firstNotNullOf(transform: (T) -> R?): R {
+    return firstNotNullOfOrNull<T, R>(transform)
         ?: throw NoSuchElementException("No element of the array was transformed to a non-null value.")
 }
 
-inline fun <T : Comparable<T>, R : Any> PrimitiveArray<out T>.firstNotNullOfOrNull(transform: (T) -> R?): R? {
+inline fun <reified T : Comparable<T>, R : Any> PrimitiveArray<out T>.firstNotNullOfOrNull(transform: (T) -> R?): R? {
     for (element in this) {
         val result = transform(element)
         if (result != null) {
@@ -603,25 +606,25 @@ inline fun <T : Comparable<T>, R : Any> PrimitiveArray<out T>.firstNotNullOfOrNu
     return null
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.firstOrNull(): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.firstOrNull(): T? {
     return if (isEmpty()) null else this[0]
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.firstOrNull(predicate: (T) -> Boolean): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.firstOrNull(predicate: (T) -> Boolean): T? {
     for (element in this) if (predicate(element)) return element
     return null
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.getOrElse(index: Int, defaultValue: (Int) -> T): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.getOrElse(index: Int, defaultValue: (Int) -> T): T {
     return if (index >= 0 && index <= lastIndex) get(index) else defaultValue(index)
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.getOrNull(index: Int): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.getOrNull(index: Int): T? {
     return if (index >= 0 && index <= lastIndex) get(index) else null
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.indexOf(element: T): Int {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.indexOf(element: T): Int {
     for (index in indices) {
         if (element == this[index]) {
             return index
@@ -631,7 +634,7 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.indexOf(element: T): Int {
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.indexOfFirst(predicate: (T) -> Boolean): Int {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.indexOfFirst(predicate: (T) -> Boolean): Int {
     for (index in indices) {
         if (predicate(this[index])) {
             return index
@@ -640,7 +643,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.indexOfFirst(predicate: (T)
     return -1
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.indexOfLast(predicate: (T) -> Boolean): Int {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.indexOfLast(predicate: (T) -> Boolean): Int {
     for (index in indices.reversed()) {
         if (predicate(this[index])) {
             return index
@@ -649,13 +652,13 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.indexOfLast(predicate: (T) 
     return -1
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.last(): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.last(): T {
     if (isEmpty())
         throw NoSuchElementException("Array is empty.")
     return this[lastIndex]
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.last(predicate: (T) -> Boolean): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.last(predicate: (T) -> Boolean): T {
     for (index in this.indices.reversed()) {
         val element = this[index]
         if (predicate(element)) return element
@@ -663,7 +666,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.last(predicate: (T) -> Bool
     throw NoSuchElementException("Array contains no element matching the predicate.")
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.lastIndexOf(element: T): Int {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.lastIndexOf(element: T): Int {
     for (index in indices.reversed()) {
         if (element == this[index]) {
             return index
@@ -672,11 +675,11 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.lastIndexOf(element: T): Int {
     return -1
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.lastOrNull(): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.lastOrNull(): T? {
     return if (isEmpty()) null else this[size - 1]
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.lastOrNull(predicate: (T) -> Boolean): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.lastOrNull(predicate: (T) -> Boolean): T? {
     for (index in this.indices.reversed()) {
         val element = this[index]
         if (predicate(element)) return element
@@ -685,30 +688,30 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.lastOrNull(predicate: (T) -
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.random(): T {
-    return random(Random)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.random(): T {
+    return random<T>(Random)
 }
 
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.random(random: Random): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.random(random: Random): T {
     if (isEmpty())
         throw NoSuchElementException("Array is empty.")
     return get(random.nextInt(size))
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.randomOrNull(): T? {
-    return randomOrNull(Random)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.randomOrNull(): T? {
+    return randomOrNull<T>(Random)
 }
 
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.randomOrNull(random: Random): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.randomOrNull(random: Random): T? {
     if (isEmpty())
         return null
     return get(random.nextInt(size))
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.single(): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.single(): T {
     return when (size) {
         0 -> throw NoSuchElementException("Array is empty.")
         1 -> this[0]
@@ -716,7 +719,7 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.single(): T {
     }
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.single(predicate: (T) -> Boolean): T {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.single(predicate: (T) -> Boolean): T {
     var single: T? = null
     var found = false
     for (element in this) {
@@ -731,11 +734,11 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.single(predicate: (T) -> Bo
     return single as T
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.singleOrNull(): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.singleOrNull(): T? {
     return if (size == 1) this[0] else null
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.singleOrNull(predicate: (T) -> Boolean): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.singleOrNull(predicate: (T) -> Boolean): T? {
     var single: T? = null
     var found = false
     for (element in this) {
@@ -749,26 +752,26 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.singleOrNull(predicate: (T)
     return single
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.drop(n: Int): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.drop(n: Int): List<T> {
     require(n >= 0) { "Requested element count $n is less than zero." }
-    return takeLast((size - n).coerceAtLeast(0))
+    return takeLast<T>((size - n).coerceAtLeast(0))
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.dropLast(n: Int): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.dropLast(n: Int): List<T> {
     require(n >= 0) { "Requested element count $n is less than zero." }
-    return take((size - n).coerceAtLeast(0))
+    return take<T>((size - n).coerceAtLeast(0))
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.dropLastWhile(predicate: (T) -> Boolean): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.dropLastWhile(predicate: (T) -> Boolean): List<T> {
     for (index in lastIndex downTo 0) {
         if (!predicate(this[index])) {
-            return take(index + 1)
+            return take<T>(index + 1)
         }
     }
     return emptyList()
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.dropWhile(predicate: (T) -> Boolean): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.dropWhile(predicate: (T) -> Boolean): List<T> {
     var yielding = false
     val list = ArrayList<T>()
     for (item in this)
@@ -781,29 +784,29 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.dropWhile(predicate: (T) ->
     return list
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.filter(predicate: (T) -> Boolean): List<T> {
-    return filterTo(ArrayList<T>(), predicate)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.filter(predicate: (T) -> Boolean): List<T> {
+    return filterTo<T, ArrayList<T>>(ArrayList(), predicate)
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.filterIndexed(predicate: (index: Int, T) -> Boolean): List<T> {
-    return filterIndexedTo(ArrayList<T>(), predicate)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.filterIndexed(predicate: (index: Int, T) -> Boolean): List<T> {
+    return filterIndexedTo<T, ArrayList<T>>(ArrayList(), predicate)
 }
 
-inline fun <T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.filterIndexedTo(
+inline fun <reified T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.filterIndexedTo(
     destination: C,
     predicate: (index: Int, T) -> Boolean,
 ): C {
-    forEachIndexed { index, element ->
+    forEachIndexed<T> { index, element ->
         if (predicate(index, element)) destination.add(element)
     }
     return destination
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.filterNot(predicate: (T) -> Boolean): List<T> {
-    return filterNotTo(ArrayList<T>(), predicate)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.filterNot(predicate: (T) -> Boolean): List<T> {
+    return filterNotTo<T, ArrayList<T>>(ArrayList(), predicate)
 }
 
-inline fun <T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.filterNotTo(
+inline fun <reified T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.filterNotTo(
     destination: C,
     predicate: (T) -> Boolean,
 ): C {
@@ -811,7 +814,7 @@ inline fun <T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T
     return destination
 }
 
-inline fun <T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.filterTo(
+inline fun <reified T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.filterTo(
     destination: C,
     predicate: (T) -> Boolean,
 ): C {
@@ -820,15 +823,15 @@ inline fun <T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T
 }
 
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.slice(indices: IntRange): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.slice(indices: IntRange): List<T> {
     if (indices.isEmpty()) return listOf()
     return copyOfRange(indices.start, indices.endInclusive + 1).asList()
 }
 
-fun <T> Iterable<T>.collectionSizeOrDefault(default: Int): Int =
+inline fun <T> Iterable<T>.collectionSizeOrDefault(default: Int): Int =
     if (this is Collection<*>) this.size else default
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.slice(indices: Iterable<Int>): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.slice(indices: Iterable<Int>): List<T> {
     val size = indices.collectionSizeOrDefault(10)
     if (size == 0) return emptyList()
     val list = ArrayList<T>(size)
@@ -838,10 +841,10 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.slice(indices: Iterable<Int>): Lis
     return list
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.take(n: Int): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.take(n: Int): List<T> {
     require(n >= 0) { "Requested element count $n is less than zero." }
     if (n == 0) return emptyList()
-    if (n >= size) return toList()
+    if (n >= size) return toList<T>()
     if (n == 1) return listOf(this[0])
     var count = 0
     val list = ArrayList<T>(n)
@@ -853,11 +856,11 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.take(n: Int): List<T> {
     return list
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.takeLast(n: Int): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.takeLast(n: Int): List<T> {
     require(n >= 0) { "Requested element count $n is less than zero." }
     if (n == 0) return emptyList()
     val size = size
-    if (n >= size) return toList()
+    if (n >= size) return toList<T>()
     if (n == 1) return listOf(this[size - 1])
     val list = ArrayList<T>(n)
     for (index in size - n until size)
@@ -865,16 +868,16 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.takeLast(n: Int): List<T> {
     return list
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.takeLastWhile(predicate: (T) -> Boolean): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.takeLastWhile(predicate: (T) -> Boolean): List<T> {
     for (index in lastIndex downTo 0) {
         if (!predicate(this[index])) {
-            return drop(index + 1)
+            return drop<T>(index + 1)
         }
     }
-    return toList()
+    return toList<T>()
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.takeWhile(predicate: (T) -> Boolean): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.takeWhile(predicate: (T) -> Boolean): List<T> {
     val list = ArrayList<T>()
     for (item in this) {
         if (!predicate(item))
@@ -884,71 +887,67 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.takeWhile(predicate: (T) ->
     return list
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.reversed(): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.reversed(): List<T> {
     if (isEmpty()) return emptyList()
-    val list = toMutableList()
+    val list = toMutableList<T>()
     list.reverse()
     return list
 }
 
-//fun <T : Comparable<T>> PrimitiveArray<out T>.sortedArrayWith(comparator: Comparator<in T>): PrimitiveArray<out T> {
+//fun <reified T : Comparable<T>> PrimitiveArray<out T>.sortedArrayWith(comparator: Comparator<in T>): PrimitiveArray<out T> {
 //    if (isEmpty()) return this
 //    return this.copyOf().apply { sortWith(comparator) }
 //}
 
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortedBy(crossinline selector: (T) -> R?): List<T> {
-    return sortedWith(compareBy(selector))
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortedBy(crossinline selector: (T) -> R?): List<T> {
+    return sortedWith<T>(compareBy(selector))
 }
 
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortedByDescending(crossinline selector: (T) -> R?): List<T> {
-    return sortedWith(compareByDescending(selector))
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortedByDescending(crossinline selector: (T) -> R?): List<T> {
+    return sortedWith<T>(compareByDescending(selector))
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.sortedDescending(): List<T> {
-    return sortedWith(reverseOrder())
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sortedDescending(): List<T> {
+    return sortedWith<T>(reverseOrder<T>())
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.sortedWith(comparator: Comparator<in T>): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sortedWith(comparator: Comparator<in T>): List<T> {
     return toTypedArray().apply { sortWith(comparator) }.asList()
 }
 
-val <T : Comparable<T>> PrimitiveArray<out T>.indices: IntRange
+inline val PrimitiveArray<*>.indices: IntRange
     get() = IntRange(0, lastIndex)
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.isEmpty(): Boolean {
-    return size == 0
-}
-
-
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.isNotEmpty(): Boolean {
+inline fun PrimitiveArray<*>.isNotEmpty(): Boolean {
     return !isEmpty()
 }
 
-val <T : Comparable<T>> PrimitiveArray<out T>.lastIndex: Int
+inline val PrimitiveArray<*>.lastIndex: Int
     get() = size - 1
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.sortDescending(fromIndex: Int, toIndex: Int): Unit {
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sortDescending(fromIndex: Int, toIndex: Int): Unit {
     sort(fromIndex, toIndex)
-    reverse(fromIndex, toIndex)
+    (this as PrimitiveArray<T>).reverse<T>(fromIndex, toIndex)
 }
 
-inline fun <T : Comparable<T>, K, V> PrimitiveArray<out T>.associate(transform: (T) -> Pair<K, V>): Map<K, V> {
-    return associateTo(LinkedHashMap<K, V>(), transform)
+inline fun <reified T : Comparable<T>, K, V> PrimitiveArray<out T>.associate(transform: (T) -> Pair<K, V>): Map<K, V> {
+    return associateTo<T, K, V, LinkedHashMap<K, V>>(LinkedHashMap(), transform)
 }
 
-inline fun <T : Comparable<T>, K> PrimitiveArray<out T>.associateBy(keySelector: (T) -> K): Map<K, T> {
-    return associateByTo(LinkedHashMap<K, T>(), keySelector)
+inline fun <reified T : Comparable<T>, K> PrimitiveArray<out T>.associateBy(keySelector: (T) -> K): Map<K, T> {
+    return associateByTo<T, K, LinkedHashMap<K, T>>(LinkedHashMap(), keySelector)
 }
 
-inline fun <T : Comparable<T>, K, V> PrimitiveArray<out T>.associateBy(
+inline fun <reified T : Comparable<T>, K, V> PrimitiveArray<out T>.associateBy(
     keySelector: (T) -> K,
     valueTransform: (T) -> V,
 ): Map<K, V> {
-    return associateByTo(LinkedHashMap<K, V>(), keySelector, valueTransform)
+    return associateByTo<T, K, V, LinkedHashMap<K, V>>(LinkedHashMap(), keySelector, valueTransform)
 }
 
-inline fun <T : Comparable<T>, K, M : MutableMap<in K, in T>> PrimitiveArray<out T>.associateByTo(
+inline fun <reified T : Comparable<T>, K, M : MutableMap<in K, in T>> PrimitiveArray<out T>.associateByTo(
     destination: M,
     keySelector: (T) -> K,
 ): M {
@@ -958,7 +957,7 @@ inline fun <T : Comparable<T>, K, M : MutableMap<in K, in T>> PrimitiveArray<out
     return destination
 }
 
-inline fun <T : Comparable<T>, K, V, M : MutableMap<in K, in V>> PrimitiveArray<out T>.associateByTo(
+inline fun <reified T : Comparable<T>, K, V, M : MutableMap<in K, in V>> PrimitiveArray<out T>.associateByTo(
     destination: M,
     keySelector: (T) -> K,
     valueTransform: (T) -> V,
@@ -969,7 +968,7 @@ inline fun <T : Comparable<T>, K, V, M : MutableMap<in K, in V>> PrimitiveArray<
     return destination
 }
 
-inline fun <T : Comparable<T>, K, V, M : MutableMap<in K, in V>> PrimitiveArray<out T>.associateTo(
+inline fun <reified T : Comparable<T>, K, V, M : MutableMap<in K, in V>> PrimitiveArray<out T>.associateTo(
     destination: M,
     transform: (T) -> Pair<K, V>,
 ): M {
@@ -979,33 +978,32 @@ inline fun <T : Comparable<T>, K, V, M : MutableMap<in K, in V>> PrimitiveArray<
     return destination
 }
 
-fun <T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.toCollection(destination: C): C {
+inline fun <reified T : Comparable<T>, C : MutableCollection<in T>> PrimitiveArray<out T>.toCollection(destination: C): C {
     for (item in this) {
         destination.add(item)
     }
     return destination
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.toHashSet(): HashSet<T> {
-    return toCollection(HashSet<T>(mapCapacity(size)))
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.toHashSet(): HashSet<T> {
+    return toCollection<T, HashSet<T>>(HashSet(mapCapacity(size)))
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.toList(): List<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.toList(): List<T> {
     return when (size) {
         0 -> emptyList()
         1 -> listOf(this[0])
-        else -> this.toMutableList()
+        else -> toMutableList<T>()
     }
 }
 
-
-fun <T : Comparable<T>> PrimitiveArray<out T>.toMutableList(): MutableList<T> {
-    return ArrayList(this)
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.toMutableList(): MutableList<T> {
+    return ArrayList<T>(this)
 }
 
 private const val INT_MAX_POWER_OF_TWO: Int = 1 shl (Int.SIZE_BITS - 2)
 
-internal fun mapCapacity(expectedSize: Int): Int = when {
+fun mapCapacity(expectedSize: Int): Int = when {
     // We are not coercing the value to a valid one and not throwing an exception. It is up to the caller to
     // properly handle negative values.
     expectedSize < 0 -> expectedSize
@@ -1015,43 +1013,43 @@ internal fun mapCapacity(expectedSize: Int): Int = when {
     else -> Int.MAX_VALUE
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.toSet(): Set<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.toSet(): Set<T> {
     return when (size) {
         0 -> emptySet()
         1 -> setOf(this[0])
-        else -> toCollection(LinkedHashSet<T>(mapCapacity(size)))
+        else -> toCollection<T, LinkedHashSet<T>>(LinkedHashSet(mapCapacity(size)))
     }
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.flatMap(transform: (T) -> Iterable<R>): List<R> {
-    return flatMapTo(ArrayList<R>(), transform)
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.flatMap(transform: (T) -> Iterable<R>): List<R> {
+    return flatMapTo<T, R, ArrayList<R>>(ArrayList<R>(), transform)
 }
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("flatMapSequence")
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.flatMap(transform: (T) -> Sequence<R>): List<R> {
-    return flatMapTo(ArrayList<R>(), transform)
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.flatMap(transform: (T) -> Sequence<R>): List<R> {
+    return flatMapTo<T, R, ArrayList<R>>(ArrayList<R>(), transform)
 }
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("flatMapIndexedIterable")
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.flatMapIndexed(transform: (index: Int, T) -> Iterable<R>): List<R> {
-    return flatMapIndexedTo(ArrayList<R>(), transform)
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.flatMapIndexed(transform: (index: Int, T) -> Iterable<R>): List<R> {
+    return flatMapIndexedTo<T, R, ArrayList<R>>(ArrayList<R>(), transform)
 }
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("flatMapIndexedSequence")
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.flatMapIndexed(transform: (index: Int, T) -> Sequence<R>): List<R> {
-    return flatMapIndexedTo(ArrayList<R>(), transform)
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.flatMapIndexed(transform: (index: Int, T) -> Sequence<R>): List<R> {
+    return flatMapIndexedTo<T, R, ArrayList<R>>(ArrayList<R>(), transform)
 }
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("flatMapIndexedIterableTo")
-inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapIndexedTo(
+inline fun <reified T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapIndexedTo(
     destination: C,
     transform: (index: Int, T) -> Iterable<R>,
 ): C {
@@ -1066,7 +1064,7 @@ inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<ou
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("flatMapIndexedSequenceTo")
-inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapIndexedTo(
+inline fun <reified T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapIndexedTo(
     destination: C,
     transform: (index: Int, T) -> Sequence<R>,
 ): C {
@@ -1078,7 +1076,7 @@ inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<ou
     return destination
 }
 
-inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapTo(
+inline fun <reified T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapTo(
     destination: C,
     transform: (T) -> Iterable<R>,
 ): C {
@@ -1092,7 +1090,7 @@ inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<ou
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("flatMapSequenceTo")
-inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapTo(
+inline fun <reified T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.flatMapTo(
     destination: C,
     transform: (T) -> Sequence<R>,
 ): C {
@@ -1103,18 +1101,19 @@ inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<ou
     return destination
 }
 
-inline fun <T : Comparable<T>, K> PrimitiveArray<out T>.groupBy(keySelector: (T) -> K): Map<K, List<T>> {
-    return (this as PrimitiveArray<T>).groupByTo(LinkedHashMap<K, MutableList<T>>(), keySelector)
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : Comparable<T>, K> PrimitiveArray<out T>.groupBy(keySelector: (T) -> K): Map<K, List<T>> {
+    return (this as PrimitiveArray<T>).groupByTo(LinkedHashMap(), keySelector)
 }
 
-inline fun <T : Comparable<T>, K, V> PrimitiveArray<out T>.groupBy(
+inline fun <reified T : Comparable<T>, K, V> PrimitiveArray<out T>.groupBy(
     keySelector: (T) -> K,
     valueTransform: (T) -> V,
 ): Map<K, List<V>> {
-    return groupByTo(LinkedHashMap<K, MutableList<V>>(), keySelector, valueTransform)
+    return groupByTo<T, K, V, LinkedHashMap<K, MutableList<V>>>(LinkedHashMap(), keySelector, valueTransform)
 }
 
-inline fun <T : Comparable<T>, K, M : MutableMap<in K, MutableList<T>>> PrimitiveArray<out T>.groupByTo(
+inline fun <reified T : Comparable<T>, K, M : MutableMap<in K, MutableList<T>>> PrimitiveArray<out T>.groupByTo(
     destination: M,
     keySelector: (T) -> K,
 ): M {
@@ -1126,7 +1125,7 @@ inline fun <T : Comparable<T>, K, M : MutableMap<in K, MutableList<T>>> Primitiv
     return destination
 }
 
-inline fun <T : Comparable<T>, K, V, M : MutableMap<in K, MutableList<V>>> PrimitiveArray<out T>.groupByTo(
+inline fun <reified T : Comparable<T>, K, V, M : MutableMap<in K, MutableList<V>>> PrimitiveArray<out T>.groupByTo(
     destination: M,
     keySelector: (T) -> K,
     valueTransform: (T) -> V,
@@ -1139,34 +1138,34 @@ inline fun <T : Comparable<T>, K, V, M : MutableMap<in K, MutableList<V>>> Primi
     return destination
 }
 
-inline fun <T : Comparable<T>, K> PrimitiveArray<out T>.groupingBy(crossinline keySelector: (T) -> K): Grouping<T, K> {
+inline fun <reified T : Comparable<T>, K> PrimitiveArray<out T>.groupingBy(crossinline keySelector: (T) -> K): Grouping<T, K> {
     return object : Grouping<T, K> {
         override fun sourceIterator(): Iterator<T> = this@groupingBy.iterator()
         override fun keyOf(element: T): K = keySelector(element)
     }
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.map(transform: (T) -> R): List<R> {
-    return mapTo(ArrayList<R>(size), transform)
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.map(transform: (T) -> R): List<R> {
+    return mapTo<T, R, ArrayList<R>>(ArrayList(size), transform)
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.mapIndexed(transform: (index: Int, T) -> R): List<R> {
-    return mapIndexedTo(ArrayList<R>(size), transform)
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.mapIndexed(transform: (index: Int, T) -> R): List<R> {
+    return mapIndexedTo<T, R, ArrayList<R>>(ArrayList(size), transform)
 }
 
-inline fun <T : Comparable<T>, R : Any> PrimitiveArray<out T>.mapIndexedNotNull(transform: (index: Int, T) -> R?): List<R> {
-    return mapIndexedNotNullTo(ArrayList<R>(), transform)
+inline fun <reified T : Comparable<T>, R : Any> PrimitiveArray<out T>.mapIndexedNotNull(transform: (index: Int, T) -> R?): List<R> {
+    return mapIndexedNotNullTo<T, R, ArrayList<R>>(ArrayList(), transform)
 }
 
-inline fun <T : Comparable<T>, R : Any, C : MutableCollection<in R>> PrimitiveArray<out T>.mapIndexedNotNullTo(
+inline fun <reified T : Comparable<T>, R : Any, C : MutableCollection<in R>> PrimitiveArray<out T>.mapIndexedNotNullTo(
     destination: C,
     transform: (index: Int, T) -> R?,
 ): C {
-    forEachIndexed { index, element -> transform(index, element)?.let { destination.add(it) } }
+    forEachIndexed<T> { index, element -> transform(index, element)?.let { destination.add(it) } }
     return destination
 }
 
-inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.mapIndexedTo(
+inline fun <reified T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.mapIndexedTo(
     destination: C,
     transform: (index: Int, T) -> R,
 ): C {
@@ -1176,11 +1175,11 @@ inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<ou
     return destination
 }
 
-inline fun <T : Comparable<T>, R : Any> PrimitiveArray<out T>.mapNotNull(transform: (T) -> R?): List<R> {
-    return mapNotNullTo(ArrayList<R>(), transform)
+inline fun <reified T : Comparable<T>, R : Any> PrimitiveArray<out T>.mapNotNull(transform: (T) -> R?): List<R> {
+    return mapNotNullTo<T, R, ArrayList<R>>(ArrayList(), transform)
 }
 
-inline fun <T : Comparable<T>, R : Any, C : MutableCollection<in R>> PrimitiveArray<out T>.mapNotNullTo(
+inline fun <reified T : Comparable<T>, R : Any, C : MutableCollection<in R>> PrimitiveArray<out T>.mapNotNullTo(
     destination: C,
     transform: (T) -> R?,
 ): C {
@@ -1188,7 +1187,7 @@ inline fun <T : Comparable<T>, R : Any, C : MutableCollection<in R>> PrimitiveAr
     return destination
 }
 
-inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.mapTo(
+inline fun <reified T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<out T>.mapTo(
     destination: C,
     transform: (T) -> R,
 ): C {
@@ -1198,25 +1197,25 @@ inline fun <T : Comparable<T>, R, C : MutableCollection<in R>> PrimitiveArray<ou
 }
 
 
-internal class IndexingIterator<out T>(private val iterator: Iterator<T>) : Iterator<IndexedValue<T>> {
+class IndexingIterator<out T>(private val iterator: Iterator<T>) : Iterator<IndexedValue<T>> {
     private var index = 0
     final override fun hasNext(): Boolean = iterator.hasNext()
     final override fun next(): IndexedValue<T> = IndexedValue(index++, iterator.next())
 }
 
-internal class IndexingIterable<out T>(private val iteratorFactory: () -> Iterator<T>) : Iterable<IndexedValue<T>> {
+class IndexingIterable<out T>(private val iteratorFactory: () -> Iterator<T>) : Iterable<IndexedValue<T>> {
     override fun iterator(): Iterator<IndexedValue<T>> = IndexingIterator(iteratorFactory())
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.withIndex(): Iterable<IndexedValue<T>> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.withIndex(): Iterable<IndexedValue<T>> {
     return IndexingIterable { iterator() }
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.distinct(): List<T> {
-    return this.toMutableSet().toList()
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.distinct(): List<T> {
+    return toMutableSet<T>().toList()
 }
 
-inline fun <T : Comparable<T>, K> PrimitiveArray<out T>.distinctBy(selector: (T) -> K): List<T> {
+inline fun <reified T : Comparable<T>, K> PrimitiveArray<out T>.distinctBy(selector: (T) -> K): List<T> {
     val set = HashSet<K>()
     val list = ArrayList<T>()
     for (e in this) {
@@ -1227,60 +1226,60 @@ inline fun <T : Comparable<T>, K> PrimitiveArray<out T>.distinctBy(selector: (T)
     return list
 }
 
-infix fun <T : Comparable<T>> PrimitiveArray<out T>.intersect(other: Iterable<T>): Set<T> {
-    val set: MutableSet<T> = this.toMutableSet() as MutableSet<T>
+inline infix fun <reified T : Comparable<T>> PrimitiveArray<out T>.intersect(other: Iterable<T>): Set<T> {
+    val set: MutableSet<T> = toMutableSet<T>()
     set.retainAll(other)
     return set
 }
 
-infix fun <T : Comparable<T>> PrimitiveArray<out T>.subtract(other: Iterable<T>): Set<T> {
-    val set: MutableSet<T> = this.toMutableSet() as MutableSet<T>
+inline infix fun <reified T : Comparable<T>> PrimitiveArray<out T>.subtract(other: Iterable<T>): Set<T> {
+    val set: MutableSet<T> = toMutableSet<T>()
     set.removeAll(other)
     return set
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.toMutableSet(): MutableSet<T> {
-    return toCollection(LinkedHashSet<T>(mapCapacity(size)))
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.toMutableSet(): MutableSet<T> {
+    return toCollection<T, LinkedHashSet<T>>(LinkedHashSet(mapCapacity(size)))
 }
 
-infix fun <T : Comparable<T>> PrimitiveArray<out T>.union(other: Iterable<T>): Set<T> {
-    val set: MutableSet<T> = this.toMutableSet() as MutableSet<T>
+inline infix fun <reified T : Comparable<T>> PrimitiveArray<out T>.union(other: Iterable<T>): Set<T> {
+    val set: MutableSet<T> = toMutableSet<T>()
     set.addAll(other)
     return set
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.all(predicate: (T) -> Boolean): Boolean {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.all(predicate: (T) -> Boolean): Boolean {
     for (element in this) if (!predicate(element)) return false
     return true
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.any(): Boolean {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.any(): Boolean {
     return !isEmpty()
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.any(predicate: (T) -> Boolean): Boolean {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.any(predicate: (T) -> Boolean): Boolean {
     for (element in this) if (predicate(element)) return true
     return false
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.count(): Int {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.count(): Int {
     return size
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.count(predicate: (T) -> Boolean): Int {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.count(predicate: (T) -> Boolean): Int {
     var count = 0
     for (element in this) if (predicate(element)) ++count
     return count
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.fold(initial: R, operation: (acc: R, T) -> R): R {
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.fold(initial: R, operation: (acc: R, T) -> R): R {
     var accumulator = initial
     for (element in this) accumulator = operation(accumulator, element)
     return accumulator
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.foldIndexed(
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.foldIndexed(
     initial: R,
     operation: (index: Int, acc: R, T) -> R,
 ): R {
@@ -1290,7 +1289,7 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.foldIndexed(
     return accumulator
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.foldRight(initial: R, operation: (T, acc: R) -> R): R {
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.foldRight(initial: R, operation: (T, acc: R) -> R): R {
     var index = lastIndex
     var accumulator = initial
     while (index >= 0) {
@@ -1299,7 +1298,7 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.foldRight(initial: R, op
     return accumulator
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.foldRightIndexed(
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.foldRightIndexed(
     initial: R,
     operation: (index: Int, T, acc: R) -> R,
 ): R {
@@ -1312,16 +1311,16 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.foldRightIndexed(
     return accumulator
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.forEach(action: (T) -> Unit): Unit {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.forEach(action: (T) -> Unit): Unit {
     for (element in this) action(element)
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.forEachIndexed(action: (index: Int, T) -> Unit): Unit {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.forEachIndexed(action: (index: Int, T) -> Unit): Unit {
     var index = 0
     for (item in this) action(index++, item)
 }
 
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxByOrNull(selector: (T) -> R): T? {
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxByOrNull(selector: (T) -> R): T? {
     if (isEmpty()) return null
     var maxElem = this[0]
     val lastIndex = this.lastIndex
@@ -1340,7 +1339,7 @@ inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxByOrN
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxOf(selector: (T) -> R): R {
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxOf(selector: (T) -> R): R {
     if (isEmpty()) throw NoSuchElementException()
     var maxValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1354,7 +1353,7 @@ inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxOf(se
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOf(selector: (T) -> Double): Double {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.maxOf(selector: (T) -> Double): Double {
     if (isEmpty()) throw NoSuchElementException()
     var maxValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1367,7 +1366,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOf(selector: (T) -> Doub
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOf(selector: (T) -> Float): Float {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.maxOf(selector: (T) -> Float): Float {
     if (isEmpty()) throw NoSuchElementException()
     var maxValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1379,7 +1378,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOf(selector: (T) -> Floa
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -> R): R? {
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -> R): R? {
     if (isEmpty()) return null
     var maxValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1393,7 +1392,7 @@ inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.maxOfOrN
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -> Double): Double? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -> Double): Double? {
     if (isEmpty()) return null
     var maxValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1405,7 +1404,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -> Float): Float? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -> Float): Float? {
     if (isEmpty()) return null
     var maxValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1417,7 +1416,10 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.maxOfOrNull(selector: (T) -
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.maxOfWith(comparator: Comparator<in R>, selector: (T) -> R): R {
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.maxOfWith(
+    comparator: Comparator<in R>,
+    selector: (T) -> R,
+): R {
     if (isEmpty()) throw NoSuchElementException()
     var maxValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1431,14 +1433,14 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.maxOfWith(comparator: Co
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.maxOfWithOrNull(
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.maxOfWithOrNull(
     comparator: Comparator<in R>,
     selector: (T) -> R,
 ): R? {
     if (isEmpty()) return null
-    var maxValue = selector(this[0])
+    var maxValue = selector(this[0] as T)
     for (i in 1..lastIndex) {
-        val v = selector(this[i])
+        val v = selector(this[i] as T)
         if (comparator.compare(maxValue, v) < 0) {
             maxValue = v
         }
@@ -1446,7 +1448,7 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.maxOfWithOrNull(
     return maxValue
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.maxOrNull(): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.maxOrNull(): T? {
     if (isEmpty()) return null
     var max = this[0]
     for (i in 1..lastIndex) {
@@ -1456,7 +1458,7 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.maxOrNull(): T? {
     return max
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.maxWithOrNull(comparator: Comparator<in T>): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.maxWithOrNull(comparator: Comparator<in T>): T? {
     if (isEmpty()) return null
     var max = this[0]
     for (i in 1..lastIndex) {
@@ -1468,7 +1470,7 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.maxWithOrNull(comparator: Comparat
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOf(selector: (T) -> Double): Double {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.minOf(selector: (T) -> Double): Double {
     if (isEmpty()) throw NoSuchElementException()
     var minValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1480,7 +1482,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOf(selector: (T) -> Doub
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOf(selector: (T) -> Float): Float {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.minOf(selector: (T) -> Float): Float {
     if (isEmpty()) throw NoSuchElementException()
     var minValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1492,7 +1494,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOf(selector: (T) -> Floa
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -> Double): Double? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -> Double): Double? {
     if (isEmpty()) return null
     var minValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1504,7 +1506,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -> Float): Float? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -> Float): Float? {
     if (isEmpty()) return null
     var minValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1514,7 +1516,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -
     return minValue
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.minWithOrNull(comparator: Comparator<in T>): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.minWithOrNull(comparator: Comparator<in T>): T? {
     if (isEmpty()) return null
     var min = this[0]
     for (i in 1..lastIndex) {
@@ -1524,7 +1526,7 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.minWithOrNull(comparator: Comparat
     return min
 }
 
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minByOrNull(selector: (T) -> R): T? {
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minByOrNull(selector: (T) -> R): T? {
     if (isEmpty()) return null
     var minElem = this[0]
     val lastIndex = this.lastIndex
@@ -1541,7 +1543,7 @@ inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minByOrN
     return minElem
 }
 
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minOf(selector: (T) -> R): R {
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minOf(selector: (T) -> R): R {
     if (isEmpty()) throw NoSuchElementException()
     var minValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1555,7 +1557,7 @@ inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minOf(se
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -> R): R? {
+inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minOfOrNull(selector: (T) -> R): R? {
     if (isEmpty()) return null
     var minValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1570,7 +1572,10 @@ inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.minOfOrN
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.minOfWith(comparator: Comparator<in R>, selector: (T) -> R): R {
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.minOfWith(
+    comparator: Comparator<in R>,
+    selector: (T) -> R,
+): R {
     if (isEmpty()) throw NoSuchElementException()
     var minValue = selector(this[0])
     for (i in 1..lastIndex) {
@@ -1584,7 +1589,7 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.minOfWith(comparator: Co
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.minOfWithOrNull(
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.minOfWithOrNull(
     comparator: Comparator<in R>,
     selector: (T) -> R,
 ): R? {
@@ -1599,7 +1604,7 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.minOfWithOrNull(
     return minValue
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.minOrNull(): T? {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.minOrNull(): T? {
     if (isEmpty()) return null
     var min = this[0]
     for (i in 1..lastIndex) {
@@ -1609,25 +1614,25 @@ fun <T : Comparable<T>> PrimitiveArray<out T>.minOrNull(): T? {
     return min
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.none(): Boolean {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.none(): Boolean {
     return isEmpty()
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.none(predicate: (T) -> Boolean): Boolean {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.none(predicate: (T) -> Boolean): Boolean {
     for (element in this) if (predicate(element)) return false
     return true
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.onEach(action: (T) -> Unit): PrimitiveArray<out T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.onEach(action: (T) -> Unit): PrimitiveArray<out T> {
     return apply { for (element in this) action(element) }
 }
 
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.onEachIndexed(action: (index: Int, T) -> Unit): PrimitiveArray<out T> {
-    return apply { forEachIndexed(action) }
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.onEachIndexed(action: (index: Int, T) -> Unit): PrimitiveArray<out T> {
+    return apply { forEachIndexed<T>(action) }
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduce(operation: (acc: S, T) -> S): S {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduce(operation: (acc: S, T) -> S): S {
     if (isEmpty())
         throw UnsupportedOperationException("Empty array can't be reduced.")
     var accumulator: S = this[0]
@@ -1637,7 +1642,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduce(operation: (a
     return accumulator
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceIndexed(operation: (index: Int, acc: S, T) -> S): S {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduceIndexed(operation: (index: Int, acc: S, T) -> S): S {
     if (isEmpty())
         throw UnsupportedOperationException("Empty array can't be reduced.")
     var accumulator: S = this[0]
@@ -1647,7 +1652,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceIndexed(operat
     return accumulator
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceIndexedOrNull(operation: (index: Int, acc: S, T) -> S): S? {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduceIndexedOrNull(operation: (index: Int, acc: S, T) -> S): S? {
     if (isEmpty())
         return null
     var accumulator: S = this[0]
@@ -1657,7 +1662,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceIndexedOrNull(
     return accumulator
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceOrNull(operation: (acc: S, T) -> S): S? {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduceOrNull(operation: (acc: S, T) -> S): S? {
     if (isEmpty())
         return null
     var accumulator: S = this[0]
@@ -1667,7 +1672,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceOrNull(operati
     return accumulator
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRight(operation: (T, acc: S) -> S): S {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduceRight(operation: (T, acc: S) -> S): S {
     var index = lastIndex
     if (index < 0) throw UnsupportedOperationException("Empty array can't be reduced.")
     var accumulator: S = get(index--)
@@ -1677,7 +1682,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRight(operatio
     return accumulator
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRightIndexed(operation: (index: Int, T, acc: S) -> S): S {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduceRightIndexed(operation: (index: Int, T, acc: S) -> S): S {
     var index = lastIndex
     if (index < 0) throw UnsupportedOperationException("Empty array can't be reduced.")
     var accumulator: S = get(index--)
@@ -1688,7 +1693,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRightIndexed(o
     return accumulator
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRightIndexedOrNull(operation: (index: Int, T, acc: S) -> S): S? {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduceRightIndexedOrNull(operation: (index: Int, T, acc: S) -> S): S? {
     var index = lastIndex
     if (index < 0) return null
     var accumulator: S = get(index--)
@@ -1699,7 +1704,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRightIndexedOr
     return accumulator
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRightOrNull(operation: (T, acc: S) -> S): S? {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.reduceRightOrNull(operation: (T, acc: S) -> S): S? {
     var index = lastIndex
     if (index < 0) return null
     var accumulator: S = get(index--)
@@ -1709,7 +1714,10 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.reduceRightOrNull(op
     return accumulator
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.runningFold(initial: R, operation: (acc: R, T) -> R): List<R> {
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.runningFold(
+    initial: R,
+    operation: (acc: R, T) -> R,
+): List<R> {
     if (isEmpty()) return listOf(initial)
     val result = ArrayList<R>(size + 1).apply { add(initial) }
     var accumulator = initial
@@ -1720,7 +1728,7 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.runningFold(initial: R, 
     return result
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.runningFoldIndexed(
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.runningFoldIndexed(
     initial: R,
     operation: (index: Int, acc: R, T) -> R,
 ): List<R> {
@@ -1734,7 +1742,7 @@ inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.runningFoldIndexed(
     return result
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.runningReduce(operation: (acc: S, T) -> S): List<S> {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.runningReduce(operation: (acc: S, T) -> S): List<S> {
     if (isEmpty()) return emptyList()
     var accumulator: S = this[0]
     val result = ArrayList<S>(size).apply { add(accumulator) }
@@ -1745,7 +1753,7 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.runningReduce(operat
     return result
 }
 
-inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.runningReduceIndexed(operation: (index: Int, acc: S, T) -> S): List<S> {
+inline fun <S : Comparable<T>, reified T : S> PrimitiveArray<out T>.runningReduceIndexed(operation: (index: Int, acc: S, T) -> S): List<S> {
     if (isEmpty()) return emptyList()
     var accumulator: S = this[0]
     val result = ArrayList<S>(size).apply { add(accumulator) }
@@ -1756,21 +1764,21 @@ inline fun <S : Comparable<T>, T : S> PrimitiveArray<out T>.runningReduceIndexed
     return result
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.scan(initial: R, operation: (acc: R, T) -> R): List<R> {
-    return runningFold(initial, operation)
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.scan(initial: R, operation: (acc: R, T) -> R): List<R> {
+    return runningFold<T, R>(initial, operation)
 }
 
-inline fun <T : Comparable<T>, R> PrimitiveArray<out T>.scanIndexed(
+inline fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.scanIndexed(
     initial: R,
     operation: (index: Int, acc: R, T) -> R,
 ): List<R> {
-    return runningFoldIndexed(initial, operation)
+    return runningFoldIndexed<T, R>(initial, operation)
 }
 
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("sumOfDouble")
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Double): Double {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Double): Double {
     var sum: Double = 0.toDouble()
     for (element in this) {
         sum += selector(element)
@@ -1781,7 +1789,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Doub
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("sumOfInt")
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Int): Int {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Int): Int {
     var sum: Int = 0.toInt()
     for (element in this) {
         sum += selector(element)
@@ -1792,7 +1800,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Int)
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("sumOfLong")
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Long): Long {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Long): Long {
     var sum: Long = 0.toLong()
     for (element in this) {
         sum += selector(element)
@@ -1803,7 +1811,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> Long
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("sumOfUInt")
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> UInt): UInt {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> UInt): UInt {
     var sum: UInt = 0.toUInt()
     for (element in this) {
         sum += selector(element)
@@ -1814,7 +1822,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> UInt
 @OptIn(kotlin.experimental.ExperimentalTypeInference::class)
 @OverloadResolutionByLambdaReturnType
 @kotlin.jvm.JvmName("sumOfULong")
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> ULong): ULong {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> ULong): ULong {
     var sum: ULong = 0.toULong()
     for (element in this) {
         sum += selector(element)
@@ -1822,7 +1830,7 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.sumOf(selector: (T) -> ULon
     return sum
 }
 
-inline fun <T : Comparable<T>> PrimitiveArray<out T>.partition(predicate: (T) -> Boolean): Pair<List<T>, List<T>> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.partition(predicate: (T) -> Boolean): Pair<List<T>, List<T>> {
     val first = ArrayList<T>()
     val second = ArrayList<T>()
     for (element in this) {
@@ -1835,11 +1843,11 @@ inline fun <T : Comparable<T>> PrimitiveArray<out T>.partition(predicate: (T) ->
     return Pair(first, second)
 }
 
-public infix fun <T : Comparable<T>, R> PrimitiveArray<out T>.zip(other: Array<out R>): List<Pair<T, R>> {
-    return zip(other) { t1, t2 -> t1 to t2 }
+inline infix fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.zip(other: Array<out R>): List<Pair<T, R>> {
+    return zip<T, R, Pair<T, R>>(other) { t1, t2 -> t1 to t2 }
 }
 
-public inline fun <T : Comparable<T>, R, V> PrimitiveArray<out T>.zip(
+inline fun <reified T : Comparable<T>, R, V> PrimitiveArray<out T>.zip(
     other: Array<out R>,
     transform: (a: T, b: R) -> V,
 ): List<V> {
@@ -1851,11 +1859,11 @@ public inline fun <T : Comparable<T>, R, V> PrimitiveArray<out T>.zip(
     return list
 }
 
-public infix fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.zip(other: PrimitiveArray<out R>): List<Pair<T, R>> {
-    return zip(other) { t1, t2 -> t1 to t2 }
+inline infix fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.zip(other: PrimitiveArray<out R>): List<Pair<T, R>> {
+    return zip<T, R, Pair<T, R>>(other) { t1, t2 -> t1 to t2 }
 }
 
-public inline fun <T : Comparable<T>, R : Comparable<R>, V> PrimitiveArray<out T>.zip(
+inline fun <reified T : Comparable<T>, R : Comparable<R>, V> PrimitiveArray<out T>.zip(
     other: PrimitiveArray<out R>,
     transform: (a: T, b: R) -> V,
 ): List<V> {
@@ -1867,11 +1875,11 @@ public inline fun <T : Comparable<T>, R : Comparable<R>, V> PrimitiveArray<out T
     return list
 }
 
-public infix fun <T : Comparable<T>, R> PrimitiveArray<out T>.zip(other: Iterable<R>): List<Pair<T, R>> {
-    return zip(other) { t1, t2 -> t1 to t2 }
+inline infix fun <reified T : Comparable<T>, R> PrimitiveArray<out T>.zip(other: Iterable<R>): List<Pair<T, R>> {
+    return zip<T, R, Pair<T, R>>(other) { t1, t2 -> t1 to t2 }
 }
 
-public inline fun <T : Comparable<T>, R, V> PrimitiveArray<out T>.zip(
+inline fun <reified T : Comparable<T>, R, V> PrimitiveArray<out T>.zip(
     other: Iterable<R>,
     transform: (a: T, b: R) -> V,
 ): List<V> {
@@ -1885,7 +1893,7 @@ public inline fun <T : Comparable<T>, R, V> PrimitiveArray<out T>.zip(
     return list
 }
 
-internal fun <T> Appendable.appendElement(element: T, transform: ((T) -> CharSequence)?) {
+inline fun <reified T> Appendable.appendElement(element: T, noinline transform: ((T) -> CharSequence)?) {
     when {
         transform != null -> append(transform(element))
         element is CharSequence? -> append(element)
@@ -1894,14 +1902,14 @@ internal fun <T> Appendable.appendElement(element: T, transform: ((T) -> CharSeq
     }
 }
 
-public fun <T : Comparable<T>, A : Appendable> PrimitiveArray<out T>.joinTo(
+inline fun <reified T : Comparable<T>, A : Appendable> PrimitiveArray<out T>.joinTo(
     buffer: A,
     separator: CharSequence = ", ",
     prefix: CharSequence = "",
     postfix: CharSequence = "",
     limit: Int = -1,
     truncated: CharSequence = "...",
-    transform: ((T) -> CharSequence)? = null,
+    noinline transform: ((T) -> CharSequence)? = null,
 ): A {
     buffer.append(prefix)
     var count = 0
@@ -1917,28 +1925,28 @@ public fun <T : Comparable<T>, A : Appendable> PrimitiveArray<out T>.joinTo(
 }
 
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.joinToString(
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.joinToString(
     separator: CharSequence = ", ",
     prefix: CharSequence = "",
     postfix: CharSequence = "",
     limit: Int = -1,
     truncated: CharSequence = "...",
-    transform: ((T) -> CharSequence)? = null,
+    noinline transform: ((T) -> CharSequence)? = null,
 ): String {
-    return joinTo(StringBuilder(), separator, prefix, postfix, limit, truncated, transform).toString()
+    return joinTo<T, StringBuilder>(StringBuilder(), separator, prefix, postfix, limit, truncated, transform).toString()
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.asIterable(): Iterable<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.asIterable(): Iterable<T> {
     if (isEmpty()) return emptyList()
     return Iterable { this.iterator() }
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.asSequence(): Sequence<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.asSequence(): Sequence<T> {
     if (isEmpty()) return emptySequence()
     return Sequence { this.iterator() }
 }
 
-fun <T : Comparable<T>> PrimitiveArray<T>.sliceArray(indices: Collection<Int>): PrimitiveArray<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<T>.sliceArray(indices: Collection<Int>): PrimitiveArray<T> {
     val result = newArray(indices.size)
     var targetIndex = 0
     for (sourceIndex in indices) {
@@ -1947,12 +1955,12 @@ fun <T : Comparable<T>> PrimitiveArray<T>.sliceArray(indices: Collection<Int>): 
     return result
 }
 
-fun <T : Comparable<T>> PrimitiveArray<T>.sliceArray(indices: IntRange): PrimitiveArray<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<T>.sliceArray(indices: IntRange): PrimitiveArray<T> {
     if (indices.isEmpty()) return copyOfRange(0, 0)
     return copyOfRange(indices.start, indices.endInclusive + 1)
 }
 
-fun <T : Comparable<T>> PrimitiveArray<T>.reverse(): Unit {
+inline fun <reified T : Comparable<T>> PrimitiveArray<T>.reverse(): Unit {
     val midPoint = (size / 2) - 1
     if (midPoint < 0) return
     var reverseIndex = lastIndex
@@ -1964,7 +1972,7 @@ fun <T : Comparable<T>> PrimitiveArray<T>.reverse(): Unit {
     }
 }
 
-internal fun checkRangeIndexes(fromIndex: Int, toIndex: Int, size: Int) {
+fun checkRangeIndexes(fromIndex: Int, toIndex: Int, size: Int) {
     if (fromIndex < 0 || toIndex > size) {
         throw IndexOutOfBoundsException("fromIndex: $fromIndex, toIndex: $toIndex, size: $size")
     }
@@ -1974,7 +1982,7 @@ internal fun checkRangeIndexes(fromIndex: Int, toIndex: Int, size: Int) {
 }
 
 @SinceKotlin("1.4")
-fun <T : Comparable<T>> PrimitiveArray<T>.reverse(fromIndex: Int, toIndex: Int): Unit {
+inline fun <reified T : Comparable<T>> PrimitiveArray<T>.reverse(fromIndex: Int, toIndex: Int): Unit {
     checkRangeIndexes(fromIndex, toIndex, size)
     val midPoint = (fromIndex + toIndex) / 2
     if (fromIndex == midPoint) return
@@ -1987,7 +1995,7 @@ fun <T : Comparable<T>> PrimitiveArray<T>.reverse(fromIndex: Int, toIndex: Int):
     }
 }
 
-fun <T : Comparable<T>> PrimitiveArray<T>.reversedArray(): PrimitiveArray<T> {
+inline fun <reified T : Comparable<T>> PrimitiveArray<T>.reversedArray(): PrimitiveArray<T> {
     if (isEmpty()) return this
     val result = newArray(size)
     val lastIndex = lastIndex
@@ -1997,12 +2005,12 @@ fun <T : Comparable<T>> PrimitiveArray<T>.reversedArray(): PrimitiveArray<T> {
 }
 
 @SinceKotlin("1.4")
-fun <T : Comparable<T>> PrimitiveArray<T>.shuffle(): Unit {
+inline fun <reified T : Comparable<T>> PrimitiveArray<T>.shuffle(): Unit {
     shuffle(Random)
 }
 
 @SinceKotlin("1.4")
-fun <T : Comparable<T>> PrimitiveArray<T>.shuffle(random: Random): Unit {
+inline fun <reified T : Comparable<T>> PrimitiveArray<T>.shuffle(random: Random): Unit {
     for (i in lastIndex downTo 1) {
         val j = random.nextInt(i + 1)
         val copy = this[i]
@@ -2011,27 +2019,28 @@ fun <T : Comparable<T>> PrimitiveArray<T>.shuffle(random: Random): Unit {
     }
 }
 
-//inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortBy(crossinline selector: (T) -> R?): Unit {
+//inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortBy(crossinline selector: (T) -> R?): Unit {
 //    if (size > 1) sortWith(compareBy(selector))
 //}
 //
-//inline fun <T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortByDescending(crossinline selector: (T) -> R?): Unit {
+//inline fun <reified T : Comparable<T>, R : Comparable<R>> PrimitiveArray<out T>.sortByDescending(crossinline selector: (T) -> R?): Unit {
 //    if (size > 1) sortWith(compareByDescending(selector))
 //}
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.sortDescending(): Unit {
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sortDescending(): Unit {
     if (size > 1) {
         sort()
-        reverse()
+        (this as PrimitiveArray<T>).reverse<T>()
     }
 }
 
-fun <T : Comparable<T>> PrimitiveArray<out T>.sorted(): List<T> {
-    return sortedArray().asList()
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sorted(): List<T> {
+    return sortedArray<T>().asList()
 }
 
-fun <T : Comparable<T>> PrimitiveArray<T>.sortedArray(): PrimitiveArray<T> {
-    if (isEmpty()) return this
-    return this.copyOf().apply { sort() }
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : Comparable<T>> PrimitiveArray<out T>.sortedArray(): PrimitiveArray<T> {
+    return (if (isEmpty()) this else this.copyOf().apply { sort() }) as PrimitiveArray<T>
 }
 
